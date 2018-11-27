@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Runner
 {
-    class Dayxx :  Day
+    class Day15 :  Day
     {
         public override string First(string input)
         {

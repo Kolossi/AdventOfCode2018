@@ -34,6 +34,32 @@ namespace Runner
         {
             return X.GetHashCode() ^ Y.GetHashCode();
         }
+
+        //       +1
+        //        |
+        // -1 ----0---- +1
+        //        |
+        //       -1
+        public XY MoveN()
+        {
+            return new XY(X, Y + 1);
+        }
+
+        public XY MoveS()
+        {
+            return new XY(X, Y - 1);
+        }
+
+        public XY MoveE()
+        {
+            return new XY(X + 1, Y);
+        }
+
+        public XY MoveW()
+        {
+            return new XY(X - 1, Y);
+        }
+
     }
 
 }

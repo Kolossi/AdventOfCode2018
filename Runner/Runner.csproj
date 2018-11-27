@@ -6,6 +6,108 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Day02.cs" />
+    <Compile Remove="Day03.cs" />
+    <Compile Remove="Day04.cs" />
+    <Compile Remove="Day05.cs" />
+    <Compile Remove="Day06.cs" />
+    <Compile Remove="Day07.cs" />
+    <Compile Remove="Day08.cs" />
+    <Compile Remove="Day09.cs" />
+    <Compile Remove="Day10.cs" />
+    <Compile Remove="Day11.cs" />
+    <Compile Remove="Day12.cs" />
+    <Compile Remove="Day13.cs" />
+    <Compile Remove="Day14.cs" />
+    <Compile Remove="Day15.cs" />
+    <Compile Remove="Day16.cs" />
+    <Compile Remove="Day17.cs" />
+    <Compile Remove="Day18.cs" />
+    <Compile Remove="Day19.cs" />
+    <Compile Remove="Day20.cs" />
+    <Compile Remove="Day21.cs" />
+    <Compile Remove="Day22.cs" />
+    <Compile Remove="Day23.cs" />
+    <Compile Remove="Day24.cs" />
+    <Compile Remove="Day25.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Inputs\Day02First.txt" />
+    <None Remove="Inputs\Day02FirstTests.txt" />
+    <None Remove="Inputs\Day02SecondTests.txt" />
+    <None Remove="Inputs\Day03First.txt" />
+    <None Remove="Inputs\Day03FirstTests.txt" />
+    <None Remove="Inputs\Day03SecondTests.txt" />
+    <None Remove="Inputs\Day04First.txt" />
+    <None Remove="Inputs\Day04FirstTests.txt" />
+    <None Remove="Inputs\Day04SecondTests.txt" />
+    <None Remove="Inputs\Day05First.txt" />
+    <None Remove="Inputs\Day05FirstTests.txt" />
+    <None Remove="Inputs\Day05SecondTests.txt" />
+    <None Remove="Inputs\Day06First.txt" />
+    <None Remove="Inputs\Day06FirstTests.txt" />
+    <None Remove="Inputs\Day06SecondTests.txt" />
+    <None Remove="Inputs\Day07First.txt" />
+    <None Remove="Inputs\Day07FirstTests.txt" />
+    <None Remove="Inputs\Day07SecondTests.txt" />
+    <None Remove="Inputs\Day08First.txt" />
+    <None Remove="Inputs\Day08FirstTests.txt" />
+    <None Remove="Inputs\Day08SecondTests.txt" />
+    <None Remove="Inputs\Day09First.txt" />
+    <None Remove="Inputs\Day09FirstTests.txt" />
+    <None Remove="Inputs\Day09SecondTests.txt" />
+    <None Remove="Inputs\Day10First.txt" />
+    <None Remove="Inputs\Day10FirstTests.txt" />
+    <None Remove="Inputs\Day10SecondTests.txt" />
+    <None Remove="Inputs\Day11First.txt" />
+    <None Remove="Inputs\Day11FirstTests.txt" />
+    <None Remove="Inputs\Day11SecondTests.txt" />
+    <None Remove="Inputs\Day12First.txt" />
+    <None Remove="Inputs\Day12FirstTests.txt" />
+    <None Remove="Inputs\Day12SecondTests.txt" />
+    <None Remove="Inputs\Day13First.txt" />
+    <None Remove="Inputs\Day13FirstTests.txt" />
+    <None Remove="Inputs\Day13SecondTests.txt" />
+    <None Remove="Inputs\Day14First.txt" />
+    <None Remove="Inputs\Day14FirstTests.txt" />
+    <None Remove="Inputs\Day14SecondTests.txt" />
+    <None Remove="Inputs\Day15First.txt" />
+    <None Remove="Inputs\Day15FirstTests.txt" />
+    <None Remove="Inputs\Day15SecondTests.txt" />
+    <None Remove="Inputs\Day16First.txt" />
+    <None Remove="Inputs\Day16FirstTests.txt" />
+    <None Remove="Inputs\Day16SecondTests.txt" />
+    <None Remove="Inputs\Day17First.txt" />
+    <None Remove="Inputs\Day17FirstTests.txt" />
+    <None Remove="Inputs\Day17SecondTests.txt" />
+    <None Remove="Inputs\Day18First.txt" />
+    <None Remove="Inputs\Day18FirstTests.txt" />
+    <None Remove="Inputs\Day18SecondTests.txt" />
+    <None Remove="Inputs\Day19First.txt" />
+    <None Remove="Inputs\Day19FirstTests.txt" />
+    <None Remove="Inputs\Day19SecondTests.txt" />
+    <None Remove="Inputs\Day20First.txt" />
+    <None Remove="Inputs\Day20FirstTests.txt" />
+    <None Remove="Inputs\Day20SecondTests.txt" />
+    <None Remove="Inputs\Day21First.txt" />
+    <None Remove="Inputs\Day21FirstTests.txt" />
+    <None Remove="Inputs\Day21SecondTests.txt" />
+    <None Remove="Inputs\Day22First.txt" />
+    <None Remove="Inputs\Day22FirstTests.txt" />
+    <None Remove="Inputs\Day22SecondTests.txt" />
+    <None Remove="Inputs\Day23First.txt" />
+    <None Remove="Inputs\Day23FirstTests.txt" />
+    <None Remove="Inputs\Day23SecondTests.txt" />
+    <None Remove="Inputs\Day24First.txt" />
+    <None Remove="Inputs\Day24FirstTests.txt" />
+    <None Remove="Inputs\Day24SecondTests.txt" />
+    <None Remove="Inputs\Day25First.txt" />
+    <None Remove="Inputs\Day25FirstTests.txt" />
+    <None Remove="Inputs\Day25SecondTests.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="OneOf" Version="2.1.108" />
   </ItemGroup>
 
