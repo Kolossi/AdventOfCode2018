@@ -111,4 +111,16 @@
     <PackageReference Include="OneOf" Version="2.1.108" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Inputs\Day01First.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Inputs\Day01FirstTests.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Inputs\Day01SecondTests.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

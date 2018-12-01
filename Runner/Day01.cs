@@ -9,24 +9,28 @@ namespace Runner
     {
         public override string First(string input)
         {
-            throw new NotImplementedException("First");
+            return input.GetParts(",").Select(i => int.Parse(i)).Sum().ToString();
         }
 
         public override string Second(string input)
         {
-            throw new NotImplementedException("Second");
-        }
-
-        public override string FirstTest(string input)
-        {
-            throw new NotImplementedException("FirstTest");
-        }
-
-        public override string SecondTest(string input)
-        {
-            throw new NotImplementedException("SecondTest");
+            return FindDup(input.GetParts(",").Select(i => int.Parse(i)).ToArray());
         }
 
         ////////////////////////////////////////////////////////
+        ///
+        public string FindDup(int[] offsets)
+        {
+            HashSet<int> seen = new HashSet<int>();
+            int pos = 0;
+            int freq = 0;
+            while(true)
+            {
+                if (seen.Contains(freq)) return freq.ToString();
+                seen.Add(freq);
+                freq += offsets[pos++];
+                if (pos >= offsets.Length) pos = 0;
+            }
+        }
     }
 }

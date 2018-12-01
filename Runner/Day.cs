@@ -139,14 +139,42 @@ namespace Runner
             return input;
         }
 
-        public static string[] GetLines(string input)
+        public static string[] GetLines(string input, string removeChars = null)
         {
+            return input.GetLines(removeChars);
+        }
+
+        public static string[] GetParts(string input, string removeChars = null)
+        {
+            return input.GetParts(removeChars);
+        }
+    }
+
+    public static class DayUtils
+    {
+        public static string[] GetParts(this string input, string removeChars=null)
+        {
+            if (!string.IsNullOrEmpty(removeChars))
+            {
+                foreach (var c in removeChars)
+                {
+                    input = input.Replace(c, ' ');
+                }
+            }
+            return input.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public static string[] GetLines(this string input, string removeChars = null)
+        {
+            if (!string.IsNullOrEmpty(removeChars))
+            {
+                foreach (var c in removeChars)
+                {
+                    input = input.Replace(c, ' ');
+                }
+            }
             return input.Split("\n\r".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
         }
 
-        public static string[] GetParts(string input)
-        {
-            return input.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
-        }
     }
 }
