@@ -12,8 +12,8 @@ namespace Runner
                 //new Day01(),
                 //new Day02(),
                 //new Day03(),
-                new Day04(),
-                //new Day05(),
+                //new Day04(),
+                new Day05(),
                 //new Day06(),
                 //new Day07(),
                 //new Day08(),
@@ -40,16 +40,22 @@ namespace Runner
             {
                 Console.WriteLine(day.GetType().Name);
                 Console.Write("  First  : ");
+#if DEBUG
                 day.TestFirst();
+#endif
                 Console.WriteLine(day.SolveFirst());
                 Console.Write("  Second : ");
+#if DEBUG
                 day.TestSecond();
+#endif
                 Console.WriteLine(day.SolveSecond());
                 Console.WriteLine();
                 Console.WriteLine("FINISHED");
                 Console.WriteLine();
             }
+#if DEBUG
             Console.ReadLine();
+#endif
         }
     }
 }
