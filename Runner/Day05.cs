@@ -42,7 +42,7 @@ namespace Runner
         
         public string Reduce(string polymer, char c)
         {
-            var C = ToUpper(c);
+            var C = Char.ToUpper(c);
             return (polymer.Replace(c, ' ').Replace(C, ' ').Replace(" ", ""));
         }
 
@@ -66,15 +66,10 @@ namespace Runner
             return string.Join("", units.ToArray());
         }
 
-        public char ToUpper(char c)
-        {
-            return c.ToString().ToUpper()[0];
-        }
-
         public bool WillReact(char x, char y)
         {
-            var X = ToUpper(x);
-            var Y = ToUpper(y);
+            var X = Char.ToUpper(x);
+            var Y = Char.ToUpper(y);
             var xUpper = (x == X);
             var yUpper = (y == Y);
             return ((xUpper ^ yUpper) && X == Y);
