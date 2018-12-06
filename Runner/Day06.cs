@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Runner
 {
-    class Day06 :  Day
+    class Day06 : Day
     {
         public override string First(string input)
         {
@@ -16,22 +16,16 @@ namespace Runner
         public override string Second(string input)
         {
             var coords = GetCoords(input);
-            return SolveSafe(coords,10000);
+            return SolveSafe(coords, 10000);
         }
 
         public override string SecondTest(string input)
         {
             var coords = GetCoords(input);
-            return SolveSafe(coords,32);
+            return SolveSafe(coords, 32);
         }
 
         ////////////////////////////////////////////////////////
-        
-        public class XYScore
-        {
-            public XY XY;
-            public int Score;
-        }
 
         private static IEnumerable<XY> GetCoords(string input)
         {
@@ -60,7 +54,10 @@ namespace Runner
                     if (!clash)
                     {
                         var winner = mins.First();
-                        AddScore(areas, winner, 1);
+                        if (noninfinite.Contains(winner))
+                        {
+                            AddScore(areas, winner, 1);
+                        }
                     }
                 }
             }
@@ -74,7 +71,6 @@ namespace Runner
             var minY = coords.Min(c => c.Y);
             var maxX = coords.Max(c => c.X);
             var maxY = coords.Max(c => c.Y);
-            var noninfinite = coords.Where(c => c.X > minX && c.X < maxX && c.Y > minY && c.Y < maxY);
             var areasize = 0;
             for (int x = minX; x <= maxX; x++)
             {
@@ -83,7 +79,7 @@ namespace Runner
                     var xy = new XY(x, y);
                     Dictionary<XY, int> dists = GetDists(coords, xy);
                     var score = dists.Values.Sum();
-                    if (score<threshold)
+                    if (score < threshold)
                     {
                         areasize++;
                     }
@@ -109,7 +105,7 @@ namespace Runner
             return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
         }
 
-        public void AddScore(Dictionary<XY,int> dict, XY xy, int score)
+        public void AddScore(Dictionary<XY, int> dict, XY xy, int score)
         {
             int current;
             if (!dict.TryGetValue(xy, out current))
