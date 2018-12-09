@@ -148,6 +148,34 @@ namespace Runner
         {
             return input.GetParts(removeChars);
         }
+
+        public bool LogEnabled = false;
+
+        public void LogLine(string format, params object[] args)
+        {
+            if (LogEnabled) Console.WriteLine(string.Format(format, args));
+        }
+
+        public void LogLine(string message)
+        {
+            if (LogEnabled) Console.WriteLine(message);
+        }
+
+        public void LogLine()
+        {
+            if (LogEnabled) Console.WriteLine();
+        }
+
+        public void Log(string format, params object[] args)
+        {
+            if (LogEnabled) Console.Write(string.Format(format, args));
+        }
+
+        public void Log(string message)
+        {
+            if (LogEnabled) Console.Write(message);
+        }
+
     }
 
     public static class DayUtils
