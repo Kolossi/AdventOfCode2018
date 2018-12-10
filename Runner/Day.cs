@@ -149,31 +149,70 @@ namespace Runner
             return input.GetParts(removeChars);
         }
 
+        public object[] ConvertEnumerableArgsToCSVString(object[] args)
+        {
+            if (!args.Any(a => a is System.Collections.IEnumerable && !(a is string))) return args;
+            var newArgs = new List<object>();
+            foreach(var a in args)
+            {
+                if (a is System.Collections.IEnumerable && !(a is string))
+                {
+                    var strValues = new List<string>();
+                    foreach (var o in (a as System.Collections.IEnumerable))
+                    {
+                        strValues.Add(o.ToString());
+                    }
+                    newArgs.Add(string.Join(", ", strValues));
+                }
+                else
+                {
+                    newArgs.Add(a);
+                }
+            }
+            return newArgs.ToArray();
+        }
+
+#if DEBUG
+        public bool LogEnabled = true;
+#else
         public bool LogEnabled = false;
+#endif
 
         public void LogLine(string format, params object[] args)
         {
+#if DEBUG
+            args = ConvertEnumerableArgsToCSVString(args);
             if (LogEnabled) Console.WriteLine(string.Format(format, args));
+#endif
         }
 
         public void LogLine(string message)
         {
+#if DEBUG
             if (LogEnabled) Console.WriteLine(message);
+#endif
         }
 
         public void LogLine()
         {
+#if DEBUG
             if (LogEnabled) Console.WriteLine();
+#endif
         }
 
         public void Log(string format, params object[] args)
         {
+#if DEBUG
+            args = ConvertEnumerableArgsToCSVString(args);
             if (LogEnabled) Console.Write(string.Format(format, args));
+#endif
         }
 
         public void Log(string message)
         {
+#if DEBUG
             if (LogEnabled) Console.Write(message);
+#endif
         }
 
     }

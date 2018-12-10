@@ -9,9 +9,8 @@ namespace Runner
     {
         public override string First(string input)
         {
-            //LogEnabled = true;
-            var allNodes = Parse(input.GetParts());
-            //var allNodes = NonRecursiveBrokenParse(input.GetParts());
+            //var allNodes = Parse(input.GetParts());
+            var allNodes = NonRecursiveBrokenParse(input.GetParts());
             return allNodes.SelectMany(n => n.MetaData).Sum().ToString();
         }
 
@@ -119,6 +118,8 @@ namespace Runner
 
             do
             {
+                LogLine("Pending Headers: [{0}]", pendingHeader.Select(i => i.Id<=26 ? ((char)(i.Id+64)).ToString() : string.Format("[{0}]",i.Id)));
+                LogLine("Pending Meta   : [{0}]", pendingMeta.Select(i => i.Id<=26 ? ((char)(i.Id+64)).ToString() : string.Format("[{0}]",i.Id)));
                 if (pendingHeader.Any())
                 {
                     var node = pendingHeader.Dequeue();
