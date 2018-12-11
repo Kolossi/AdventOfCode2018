@@ -1,0 +1,6 @@
+Fuel cell at 3,5, grid serial number 8:4
+Fuel cell at 122,79, grid serial number 57:-5
+Fuel cell at 217,196, grid serial number 39:0
+Fuel cell at 101,153, grid serial number 71:4
+18:33,45
+42:21,61
