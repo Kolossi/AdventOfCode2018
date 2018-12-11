@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Day12.cs" />
     <Compile Remove="Day13.cs" />
     <Compile Remove="Day14.cs" />
     <Compile Remove="Day15.cs" />
@@ -23,9 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Inputs\Day12First.txt" />
-    <None Remove="Inputs\Day12FirstTests.txt" />
-    <None Remove="Inputs\Day12SecondTests.txt" />
     <None Remove="Inputs\Day13First.txt" />
     <None Remove="Inputs\Day13FirstTests.txt" />
     <None Remove="Inputs\Day13SecondTests.txt" />
