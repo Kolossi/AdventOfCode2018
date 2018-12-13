@@ -155,21 +155,30 @@ namespace Runner
             var newArgs = new List<object>();
             foreach(var a in args)
             {
-                if (a is System.Collections.IEnumerable && !(a is string))
-                {
-                    var strValues = new List<string>();
-                    foreach (var o in (a as System.Collections.IEnumerable))
-                    {
-                        strValues.Add(o.ToString());
-                    }
-                    newArgs.Add(string.Join(", ", strValues));
-                }
-                else
-                {
-                    newArgs.Add(a);
-                }
+                object newArg = ConvertEnumerableArgToCSVString(a);
+                newArgs.Add(newArg);
             }
             return newArgs.ToArray();
+        }
+
+        private static object ConvertEnumerableArgToCSVString(object a)
+        {
+            object newArg;
+            if (a is System.Collections.IEnumerable && !(a is string))
+            {
+                var strValues = new List<string>();
+                foreach (var o in (a as System.Collections.IEnumerable))
+                {
+                    strValues.Add(o.ToString());
+                }
+                newArg = string.Join(", ", strValues);
+            }
+            else
+            {
+                newArg = a;
+            }
+
+            return newArg;
         }
 
 #if DEBUG
@@ -186,10 +195,10 @@ namespace Runner
 #endif
         }
 
-        public void LogLine(string message)
+        public void LogLine(object arg)
         {
 #if DEBUG
-            if (LogEnabled) Console.WriteLine(message);
+            if (LogEnabled) Console.WriteLine(ConvertEnumerableArgToCSVString(arg));
 #endif
         }
 
@@ -208,10 +217,10 @@ namespace Runner
 #endif
         }
 
-        public void Log(string message)
+        public void Log(object arg)
         {
 #if DEBUG
-            if (LogEnabled) Console.Write(message);
+            if (LogEnabled) Console.Write(ConvertEnumerableArgToCSVString(arg));
 #endif
         }
 
