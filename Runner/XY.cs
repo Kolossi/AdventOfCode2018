@@ -42,12 +42,12 @@ namespace Runner
         //       -1
         public XY MoveN()
         {
-            return new XY(X, Y + 1);
+            return new XY(X, Y - 1);
         }
 
         public XY MoveS()
         {
-            return new XY(X, Y - 1);
+            return new XY(X, Y + 1);
         }
 
         public XY MoveE()
@@ -60,6 +60,51 @@ namespace Runner
             return new XY(X - 1, Y);
         }
 
+        public XY Move(Direction dir)
+        {
+            switch (dir)
+            {
+                case Direction.North:
+                    return MoveN();
+                    break;
+                case Direction.East:
+                    return MoveE();
+                    break;
+                case Direction.South:
+                    return MoveS();
+                    break;
+                case Direction.West:
+                    return MoveW();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Direction");
+                    break;
+            }
+        }
+
+        public static Dictionary<Direction, char> DirToChar = new Dictionary<Direction, char>()
+        {
+            { Direction.North,'^'},
+            { Direction.East,'>' },
+            { Direction.South,'v'},
+            { Direction.West,'<' }
+        };
+
+        public static Dictionary<char, Direction> CharToDir = new Dictionary<char, Direction>()
+        {
+            { '^',Direction.North},
+            { '>',Direction.East},
+            { 'v',Direction.South},
+            { '<',Direction.West }
+        };
+    }
+
+    public enum Direction
+    {
+        North = 0,
+        East = 1,
+        South = 2,
+        West = 3
     }
 
 }

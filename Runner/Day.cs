@@ -136,7 +136,7 @@ namespace Runner
             if (set == "Second" && !File.Exists(filename)) return GetInput("First");
             string input = System.IO.File.ReadAllText(filename);
             if (set == "Second" && input == "FIRST") return GetInput("First");
-            return input.Trim();
+            return input;
         }
 
         public static string[] GetLines(string input, string removeChars = null)

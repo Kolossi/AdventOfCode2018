@@ -39,12 +39,12 @@ namespace Runner
             foreach (var day in days)
             {
                 Console.WriteLine(day.GetType().Name);
-                Console.Write("  First  : ");
+                Console.WriteLine("  First  : ");
 #if DEBUG
                 day.TestFirst();
 #endif
                 Console.WriteLine(day.SolveFirst());
-                Console.Write("  Second : ");
+                Console.WriteLine("  Second : ");
 #if DEBUG
                 day.TestSecond();
 #endif
