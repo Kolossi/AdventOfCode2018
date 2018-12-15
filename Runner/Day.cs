@@ -93,9 +93,23 @@ namespace Runner
 
             if (lines[lines.Length-1][0]==':')
             {
-                lines = new string[1]{
-                    string.Join("\r\n",lines.Take(lines.Length-1))+lines[lines.Length-1]
-                };
+                var sb = new StringBuilder();
+                var testLines = new List<string>();
+
+                foreach (var testLine in lines)
+                {
+                    if (testLine[0]==':')
+                    {
+                        sb.Append(testLine);
+                        testLines.Add(sb.ToString());
+                        sb.Clear();
+                    }
+                    else
+                    {
+                        sb.AppendLine(testLine);
+                    }
+                }
+                lines = testLines.ToArray();
             }
 
             foreach (var line in lines)
@@ -149,7 +163,7 @@ namespace Runner
             return input.GetParts(removeChars);
         }
 
-        public object[] ConvertEnumerableArgsToCSVString(object[] args)
+        public static object[] ConvertEnumerableArgsToCSVString(object[] args)
         {
             if (!args.Any(a => a is System.Collections.IEnumerable && !(a is string))) return args;
             var newArgs = new List<object>();
@@ -182,12 +196,12 @@ namespace Runner
         }
 
 #if DEBUG
-        public bool LogEnabled = true;
+        public static bool LogEnabled = true;
 #else
-        public bool LogEnabled = false;
+        public static bool LogEnabled = false;
 #endif
 
-        public void LogLine(string format, params object[] args)
+        public static void LogLine(string format, params object[] args)
         {
 #if DEBUG
             args = ConvertEnumerableArgsToCSVString(args);
@@ -195,21 +209,21 @@ namespace Runner
 #endif
         }
 
-        public void LogLine(object arg)
+        public static void LogLine(object arg)
         {
 #if DEBUG
             if (LogEnabled) Console.WriteLine(ConvertEnumerableArgToCSVString(arg));
 #endif
         }
 
-        public void LogLine()
+        public static void LogLine()
         {
 #if DEBUG
             if (LogEnabled) Console.WriteLine();
 #endif
         }
 
-        public void Log(string format, params object[] args)
+        public static void Log(string format, params object[] args)
         {
 #if DEBUG
             args = ConvertEnumerableArgsToCSVString(args);
@@ -217,7 +231,7 @@ namespace Runner
 #endif
         }
 
-        public void Log(object arg)
+        public static void Log(object arg)
         {
 #if DEBUG
             if (LogEnabled) Console.Write(ConvertEnumerableArgToCSVString(arg));

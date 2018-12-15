@@ -13,6 +13,11 @@ namespace Runner
             X = x;
             Y = y;
         }
+
+        public XY(XY xy) : this(xy.X,xy.Y)
+        {
+        }
+
         public override string ToString()
         {
             return string.Format("[{0},{1}]", X, Y);
@@ -66,19 +71,14 @@ namespace Runner
             {
                 case Direction.North:
                     return MoveN();
-                    break;
                 case Direction.East:
                     return MoveE();
-                    break;
                 case Direction.South:
                     return MoveS();
-                    break;
                 case Direction.West:
                     return MoveW();
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException("Direction");
-                    break;
             }
         }
 
