@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Day17.cs" />
     <Compile Remove="Day18.cs" />
     <Compile Remove="Day19.cs" />
     <Compile Remove="Day20.cs" />
@@ -18,9 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Inputs\Day17First.txt" />
-    <None Remove="Inputs\Day17FirstTests.txt" />
-    <None Remove="Inputs\Day17SecondTests.txt" />
     <None Remove="Inputs\Day18First.txt" />
     <None Remove="Inputs\Day18FirstTests.txt" />
     <None Remove="Inputs\Day18SecondTests.txt" />
@@ -194,6 +190,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Inputs\Day16SecondTests.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Inputs\Day17First.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Inputs\Day17FirstTests.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Inputs\Day17SecondTests.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
