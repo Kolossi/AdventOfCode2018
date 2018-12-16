@@ -12,27 +12,31 @@ namespace Runner
             LogEnabled = false;
             IEnumerable<OpTest> opTests = GetOpTests(input);
             return opTests.Count(t => FindPossibleOps(t).Count() >= 3).ToString();
-
         }
 
         public override string Second(string input)
         {
-            LogEnabled = true;
+            LogEnabled = false;
             var numberOpCodeLookup = GetNumberOpCodeLookup(input);
             var instructions = GetProgram(input);
             long[] regs = Execute(new long[4]{0,0,0,0}, instructions, numberOpCodeLookup);
-            return regs.ToString();
+            return regs[0].ToString();
         }
 
         public override string FirstTest(string input)
         {
+            LogEnabled = false;
             IEnumerable<OpTest> opTests = GetOpTests(input);
             return FindPossibleOps(opTests.First()).Count().ToString();
         }
 
         public override string SecondTest(string input)
         {
-            throw new NotImplementedException("Second");           
+            LogEnabled = false;
+            IEnumerable<OpTest> opTests = GetOpTests(input);
+            var result = FindPossibleOps(opTests.First());
+            LogLine("Possible:{0}", result);
+            return string.Join(",",result);
         }
 
         ////////////////////////////////////////////////////////
@@ -76,7 +80,12 @@ namespace Runner
                 {
                     var number = numbers.First();
                     lookup[number] = opcode;
-                    possibleLookups[number] = possibleLookups[number].Where(o => o != opcode).ToList();
+                    possibleLookups.Remove(number);
+                    foreach (var k in possibleLookups.Keys.ToArray())
+                    {
+                        possibleLookups[k] = possibleLookups[k].Where(o => o != opcode).ToList();
+                        if (!possibleLookups[k].Any()) throw new InvalidOperationException();
+                    }
                 }
             }
             do
@@ -103,6 +112,11 @@ namespace Runner
                     }
                 }
             } while (possibleLookups.Any());
+
+            foreach (Op opcode in Enum.GetValues(typeof(Op)))
+            {
+                if (!lookup.Values.Contains(opcode)) throw new InvalidOperationException();
+            }
             return lookup;
         }
 
@@ -160,6 +174,7 @@ namespace Runner
                 regs = ExecuteOp(opcode, test.Instruction, regs);
                 if (Compare(regs, test.After)) possible.Add(opcode);
             }
+            //if (possible.Count() == 0) throw new InvalidOperationException();
             return possible;
         }
 
@@ -176,8 +191,8 @@ namespace Runner
         public long[] ExecuteOp(Op opcode, long[] instruction, long[] regs)
         {
             int resultIndex = (int)instruction[3];
-            var a = (((int)OpRegLookup[opcode] & 0x10) == 0x10) ? regs[instruction[1]] : instruction[1];
-            var b = (((int)OpRegLookup[opcode] & 0x01) == 0x01) ? regs[instruction[2]] : instruction[2];
+            var a = (((int)OpRegLookup[opcode] & 0x10) == 0x10) ? regs[(int)(instruction[1])] : instruction[1];
+            var b = (((int)OpRegLookup[opcode] & 0x01) == 0x01) ? regs[(int)(instruction[2])] : instruction[2];
             var func = OpFuncLookup[opcode];
             var result = func(a, b);
             regs[resultIndex] = result;
@@ -237,12 +252,12 @@ namespace Runner
             {Op.bani,OpRegs.RegAValB},
             {Op.borr,OpRegs.RegARegB},
             {Op.bori,OpRegs.RegAValB},
-            {Op.setr,OpRegs.RegARegB},
+            {Op.setr,OpRegs.RegAValB},
             {Op.seti,OpRegs.ValAValB},
-            {Op.gtir,OpRegs.RegARegB},
+            {Op.gtir,OpRegs.ValARegB},
             {Op.gtri,OpRegs.RegAValB},
             {Op.gtrr,OpRegs.RegARegB},
-            {Op.eqir,OpRegs.RegARegB},
+            {Op.eqir,OpRegs.ValARegB},
             {Op.eqri,OpRegs.RegAValB},
             {Op.eqrr,OpRegs.RegARegB}
         };
@@ -259,15 +274,13 @@ namespace Runner
             {Op.bori,(a, b) => a|b},
             {Op.setr,(a, b) => a},
             {Op.seti,(a, b) => a},
-            {Op.gtir,(a, b) => a>b?1:0},
-            {Op.gtri,(a, b) => a>b?1:0},
-            {Op.gtrr,(a, b) => a>b?1:0},
-            {Op.eqir,(a, b) => a==b?1:0},
-            {Op.eqri,(a, b) => a==b?1:0},
-            {Op.eqrr,(a, b) => a==b?1:0},
+            {Op.gtir,(a, b) => (a>b)?1:0},
+            {Op.gtri,(a, b) => (a>b)?1:0},
+            {Op.gtrr,(a, b) => (a>b)?1:0},
+            {Op.eqir,(a, b) => (a==b)?1:0},
+            {Op.eqri,(a, b) => (a==b)?1:0},
+            {Op.eqrr,(a, b) => (a==b)?1:0},
         };
-
-
     }
 
     public static class ShowRegs
