@@ -9,14 +9,30 @@ namespace Runner
     {
         public override string First(string input)
         {
+            LogEnabled = false;
             var ground = new Ground(input);
-            return "X";
+            ground.TraceWater();
+            ground.TraceWater();// to fix a screw up in the algorithm somewhere
+            ground.ShowState();
+            var wetOrWater = ground.WetOrWater();
+            return wetOrWater.Count().ToString();  // not 406 too low, 31889 too high
         }
 
         public override string Second(string input)
         {
-            throw new NotImplementedException("Second");
+            LogEnabled = false;
+            var ground = new Ground(input);
+            ground.TraceWater();
+            ground.TraceWater();// to fix a screw up in the algorithm somewhere
+            ground.ShowState();
+            var waterOnly = ground.WaterOnly();
+            return waterOnly.Count().ToString();  // not 8870 too low
         }
+
+        //public override string FirstTest(string input)
+        //{
+        //    throw new NotImplementedException("SecondTest");
+        //}
 
         public override string SecondTest(string input)
         {
@@ -37,8 +53,8 @@ namespace Runner
             public Ground(string input)
             {
                 Spring.Set(500, 0);
-                MinPos = new XY(int.MaxValue, int.MaxValue);
-                MaxPos = new XY(int.MinValue, int.MinValue);
+                MinPos = new XY(Spring.GetAllCoords().First());
+                MaxPos = new XY(Spring.GetAllCoords().First());
 
                 foreach (var line in input.GetLines("=,"))
                 {
@@ -75,19 +91,156 @@ namespace Runner
                 if (LogEnabled) ShowState();
             }
 
-            private void ShowState()
+            public Ground TraceWater()
             {
-                LogLine("{0}:", MinPos.MoveN().MoveW());
-                for (int y = MinPos.Y - 1; y <= MaxPos.Y + 1; y++)
+                var waterPath = new Path();
+                waterPath.Move(new XY(500,0));
+                var pathsToProcess = new Queue<Path>();
+                pathsToProcess.Enqueue(waterPath);
+
+                while (pathsToProcess.Any())
                 {
-                    for (int x = MinPos.X - 1; x <= MaxPos.X + 1; x++)
+                    IEnumerable<XY> waterCoords = Water.GetAllCoords();
+                    //if (waterCoords.Any() && waterCoords.Max(xy => xy.Y) > 1380) LogEnabled = true;
+
+                    var path = pathsToProcess.Dequeue();
+                    if (LogEnabled)
                     {
-                        Log(Spring.Has(x,y) ? "+" :
+                        LogLine("Will this fall out of map?: {0}", path);
+                        ShowState(point: path.XY, startY: 1380, maxLines: 20);
+                    }
+
+                    if (!WaterFall(path)) continue;
+
+                    Path trickleWestPath;
+                    Path trickleEastPath;
+                    bool overFlow = false;
+                    bool newFlow = false;
+
+                    while (!overFlow)
+                    {
+                        if (LogEnabled)
+                        {
+                            LogLine("Looking for overflow: {0} - {1}", path.XY, path);
+                            ShowState(point: path.XY, startY: 1380, maxLines: 20);
+                        }
+                        if (TrickleWaterToFall(path.XY, Direction.West, out trickleWestPath))
+                        {
+                            overFlow = true;
+                            if (!pathsToProcess.Any(p => p.XY.Equals(trickleWestPath.XY)))
+                            {
+                                var newPath = new Path().Move(trickleWestPath.XY);
+                                pathsToProcess.Enqueue(newPath);
+                                LogLine("Enqueued overflow : {0}, ", newPath);
+                            }
+                        }
+
+                        if (TrickleWaterToFall(path.XY, Direction.East, out trickleEastPath))
+                        {
+                            overFlow = true;
+                            if (!pathsToProcess.Any(p => p.XY.Equals(trickleEastPath.XY)))
+                            {
+                                var newPath = new Path().Move(trickleEastPath.XY);
+                                pathsToProcess.Enqueue(newPath);
+                                LogLine("Enqueued overflow : {0}, ", newPath);                            }
+                        }
+
+                        IEnumerable<XY> tricklePoints = trickleWestPath.Points.Union(trickleEastPath.Points).Distinct();
+
+                        if (!overFlow && tricklePoints.Any()) newFlow = true;
+                        foreach (var trickleXY in tricklePoints)
+                        {
+                            (overFlow ? Wet : Water).Set(trickleXY);
+                        }
+
+                        if (path.Length == 0) break;
+                        path.Backup();
+                    }
+                    if (path.Length == 0) continue;
+                    if (newFlow)
+                    {
+                        var newPath = new Path(path.Backup());
+                        pathsToProcess.Enqueue(newPath);
+                        if (LogEnabled)
+                        {
+                            ShowState(point: path.XY, startY: 1380, maxLines: 20);
+                            LogLine("Enqueued backup: {0}", path);
+                        }
+                    }
+                }
+
+                return this;
+            }
+
+            private bool WaterFall(Path path)
+            {
+                XY below;
+                while (CanFall(path.XY, out below))
+                {
+                    if (below.Y > MaxPos.Y) return false;
+                    path.Move(below);
+                    Wet.Set(below);
+                };
+
+                return true;
+            }
+
+            private bool TrickleWaterToFall(XY xy, Direction direction, out Path trickle)
+            {
+                trickle = new Path();
+                trickle.Move(xy);
+                
+                XY waterPos = xy.Move(direction);
+
+                while (!Blocked(waterPos))
+                {
+                    trickle.Move(waterPos);
+                    if (CanFall(waterPos)) return true;
+                    waterPos = waterPos.Move(direction);
+                }
+                return false;
+            }
+
+            private bool CanFall(XY xy)
+            {
+                XY below;
+                return CanFall(xy, out below);
+            }
+
+            private bool CanFall(XY xy, out XY below)
+            {
+                below = xy.MoveS();
+                if (!Blocked(below))
+                {
+                    return true;
+                }
+                below = null;
+                return false;
+            }
+
+            private bool Blocked(XY xy)
+            {
+                return Clay.Has(xy) || Water.Has(xy);
+            }
+
+            public void ShowState(XY point = null, int startY = 0, int maxLines = int.MaxValue)
+            {
+                int lines = 0;
+                XY startPos = new XY(MinPos.X - 1, Math.Max(MinPos.Y - 1, startY));
+                XY endPos = new XY(MaxPos.X + 1, MaxPos.Y + 1);
+                LogLine("{0}-{1}:", startPos,endPos);
+                for (int y = startPos.Y; y <= endPos.Y; y++)
+                {
+                    for (int x = startPos.X; x <= endPos.X; x++)
+                    {
+                        Log(point != null && point.X == x && point.Y == y ? "P" :
+                            Spring.Has(x, y) ? "+" :
                             Clay.Has(x, y) ? "#" :
                             Water.Has(x, y) ? "~" :
                             Wet.Has(x, y) ? "|" : ".");
                     }
                     LogLine();
+                    if (lines++ > maxLines) return;
                 }
             }
 
@@ -100,7 +253,76 @@ namespace Runner
                 MinPos = new XY(minX, minY);
                 MaxPos = new XY(maxX, maxY);
             }
+
+            internal IEnumerable<XY> WetOrWater()
+            {
+                var minY = Clay.GetAllCoords().Min(clay => clay.Y);
+                return Wet.GetAllCoords()
+                    .Union(Water.GetAllCoords())
+                    .Where(xy=>xy.Y>=minY && xy.Y<=MaxPos.Y)
+                    .Distinct();
+            }
+
+            internal IEnumerable<XY> WaterOnly()
+            {
+                var minY = Clay.GetAllCoords().Min(clay => clay.Y);
+                return Water.GetAllCoords()
+                    .Where(xy=>xy.Y>=minY && xy.Y<=MaxPos.Y)
+                    .Distinct();
+            }
         }
+
+        public class Path
+        {
+            public XY XY;
+            public LinkedList<XY> Points = new LinkedList<XY>();
+            public Map<bool> Visited = new Map<bool>();
+            public int Length = -1;
+
+            public Path()
+            {
+            }
+
+            public Path(Path sourcePath)
+            {
+                XY = new XY(sourcePath.XY.X, sourcePath.XY.Y);
+                Points = new LinkedList<XY>(sourcePath.Points);
+                Visited = new Map<bool>(sourcePath.Visited);
+                Length = sourcePath.Length;
+            }
+
+            public Path Move(XY xy)
+            {
+                XY = xy;
+                Visited.Set(xy);
+                Points.AddLast(xy);
+                Length++;
+                return this;
+            }
+
+            public Path Backup()
+            {
+                if (Length == 0) throw new InvalidOperationException();
+                //if (Length == 1)
+                //{
+                //    XY = Points.Last.Value;
+                //}
+                //else
+                //{
+                    XY = Points.Last.Previous.Value;
+                //}
+                Visited.Remove(XY);
+                Points.RemoveLast();
+                Length--;
+                return this;
+            }
+
+            public override string ToString()
+            {
+                return string.Format("({0}):{1}", Length, string.Join(",", Points));
+            }
+        }
+
 
         public class Map<T>
         {
@@ -133,7 +355,13 @@ namespace Runner
                 }
             }
 
-            public IEnumerable<T> GetAll()
+            public IEnumerable<XY> GetAllCoords()
+            {
+                if (!Data.Any()) return Enumerable.Empty<XY>();
+                return Data.Keys.SelectMany(y => Data[y].Keys.Select(x => new XY(x, y)));
+            }
+
+            public IEnumerable<T> GetAllValues()
             {
                 return Data.SelectMany(i => i.Value).Select(i => i.Value);
             }
