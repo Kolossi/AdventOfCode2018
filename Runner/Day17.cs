@@ -303,14 +303,7 @@ namespace Runner
             public Path Backup()
             {
                 if (Length == 0) throw new InvalidOperationException();
-                //if (Length == 1)
-                //{
-                //    XY = Points.Last.Value;
-                //}
-                //else
-                //{
-                    XY = Points.Last.Previous.Value;
-                //}
+                XY = Points.Last.Previous.Value;
                 Visited.Remove(XY);
                 Points.RemoveLast();
                 Length--;

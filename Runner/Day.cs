@@ -238,6 +238,32 @@ namespace Runner
 #endif
         }
 
+        public bool PredictResultBasedOnCycle(IEnumerable<long> results, long targetIteration, out long prediction)
+        {
+            prediction = long.MinValue;
+            if (results.Count() <= 2)
+            {
+                return false;
+            }
+            var resultArray = results.ToArray();
+            var endIndex = resultArray.Length - 1;
+            var last = resultArray[endIndex];
+            int startIndex = -1;
+            for (int i = resultArray.Length - 2; i >= 0; i--)
+            {
+                if (resultArray[i] == last)
+                {
+                    startIndex = i;
+                    break;
+                }
+            }
+            if (startIndex < 0) return false;
+            var cycleLength = endIndex - startIndex;
+            var targetIndex = (int)(startIndex + (targetIteration - 1 - startIndex) % cycleLength);
+            prediction = resultArray[targetIndex];
+            LogLine("repeatVal={0},start={1},length={2},target={3},targetIndex={4},prediction={5}", last, startIndex, cycleLength, targetIteration, targetIndex, prediction);
+            return true;
+        }
     }
 
     public static class DayUtils
@@ -265,6 +291,5 @@ namespace Runner
             }
             return input.Split("\n\r".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
         }
-
     }
 }
