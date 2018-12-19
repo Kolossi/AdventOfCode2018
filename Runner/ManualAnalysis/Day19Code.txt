@@ -1,0 +1,84 @@
+0: PTR = PTR + 16                           Jump to "AAAA"
+1: r4 = 1                            "BBBB" r4 = 1
+2: r2 = 1                            "DDDD" r2 = 1
+3: r3 = r4 * r2                      "CCCC" r3 = 1
+4: if (r3 == r1) r3 = 1 else r3 = 0         if (r3==r1) r0+=r4;
+5: PTR = r3 + PTR                           .
+6: PTR = PTR + 1                            .
+7: r0 = r4 + r0                             .
+8: r2 = r2 + 1                              r2++
+9: if (r2 > r1) r3 = 1 else r3 = 0          if (r2<=r1)  jump to "CCCC"
+10: PTR = PTR + r3                          .
+11: PTR = 2                                 .
+12: r4 = r4 + 1                             r4++
+13: if (r4 > r1) r3 = 1 else r3 = 0         if (r4>r1) EXIT else Jump to "BBBB"
+14: PTR = r3 + PTR                          .
+15: PTR = 1                                 .
+16: PTR = PTR * PTR                         .
+17: r1 = r1 + 2                      "AAAA" r1 = (r1+2)^2*19*11    if r1 = 0   r1 = 4*19*11 = 836
+18: r1 = r1 * r1                            .
+19: r1 = PTR * r1                           .
+20: r1 = r1 * 11                            .
+21: r3 = r3 + 7                             r3 = (r3+7)*22+8        if r3=0   r3 = 162
+22: r3 = r3 * PTR                           .
+23: r3 = r3 + 8                             .
+24: r1 = r1 + r3                            r1 = r1+r3              if r1 & r3 = 0 r1 = 998
+25: PTR = PTR + r0                          skip r0 (+1!) forward
+26: PTR = 0                                 jump to "BBBB"
+27: r3 = PTR                                r3=(27*28+29)*30*14*32 = 10550400
+28: r3 = r3 * PTR                           .
+29: r3 = PTR + r3                           .
+30: r3 = PTR * r3                           .
+31: r3 = r3 * 14                            .
+32: r3 = r3 * PTR                           .
+33: r1 = r1 + r3                            r1+=r3 (10550400)
+34: r0 = 0                                  r0=0
+35: PTR = 0                                 jump to "BBBB"
+
+AAAA:
+        r1 = 836    r1 = 209*(r1+2)^2
+r3 = 162    r3 = 22*r3 + 162
+r1 = 998    r1+=r3 
+if (r0==1)
+    r3=10550400 (or bugfix value)
+    r1+=r3
+    r0=0
+else if (r0!=0 (&& r0!=1))
+    jump to 26+r0   ?????
+BBBB:
+do
+    r4 = 1
+    DDDD:
+    r2 = 1
+    CCCC:
+    do
+      r3 = r4 * r2
+      if (r3==r1) r0+=r4 
+      r2++
+    until (r2>r1)
+    r4++
+until (r4>r1)
+
+    
+
+
+
+r1 = 998
+if (r0!=0 && r0!=1) jump to 26+r0   ?????
+if (r0==1)
+    r1=10551398
+else
+r0=0
+BBBB:
+for r4 = 1..r1                      FIX: until r4*r4>r1 (r4>sqrt(r1))
+    for r2 = 1..r1                  FIX:until r2*r2>r1  (r2>sqrt(r1))
+      if ((r4 * r2)==r1) r0+=r4     FIX: r0+=r2       r0 = sum of simple factors of r1
+    end for
+end for
+
+r0 is sum of simple factors of r1, where r1 has 2 different values depending on whether r0 is 0 or 1 at start:
+
+for r0=0, r1 = 998,      answer is 1500 (1+2+499+998)
+for r0=1, r1 = 10551398, answer is 18869760 (1+2+11+13+22+26+79+143+158+286+467+869+934+1027+1738+2054+5137+6071+10274+11297+12142+22594+36893+66781+73786+133562+405823+479609+811646+959218+5275699+10551398)
+ factors found using online calculator https://www.calculatorsoup.com/calculators/math/factors.php
+

@@ -20,7 +20,7 @@ namespace Runner
             var numberOpCodeLookup = GetNumberOpCodeLookup(input);
             var instructions = GetProgram(input);
             long[] regs = Execute(new long[4]{0,0,0,0}, instructions, numberOpCodeLookup);
-            return regs[0].ToString();
+            return regs[0].ToString(); // not 1
         }
 
         public override string FirstTest(string input)
@@ -188,7 +188,7 @@ namespace Runner
             return true;
         }
 
-        public long[] ExecuteOp(Op opcode, long[] instruction, long[] regs)
+        public static long[] ExecuteOp(Op opcode, long[] instruction, long[] regs)
         {
             int resultIndex = (int)instruction[3];
             var a = (((int)OpRegLookup[opcode] & 0x10) == 0x10) ? regs[(int)(instruction[1])] : instruction[1];
@@ -242,7 +242,7 @@ namespace Runner
             eqrr
         }
 
-        public Dictionary<Op, OpRegs> OpRegLookup = new Dictionary<Op, OpRegs>()
+        public static Dictionary<Op, OpRegs> OpRegLookup = new Dictionary<Op, OpRegs>()
         {
             {Op.addr,OpRegs.RegARegB},
             {Op.addi,OpRegs.RegAValB},
@@ -262,7 +262,7 @@ namespace Runner
             {Op.eqrr,OpRegs.RegARegB}
         };
 
-        public Dictionary<Op, Func<long, long, long>> OpFuncLookup = new Dictionary<Op, Func<long, long, long>>()
+        public static Dictionary<Op, Func<long, long, long>> OpFuncLookup = new Dictionary<Op, Func<long, long, long>>()
         {
             {Op.addr,(a, b) => a+b},
             {Op.addi,(a, b) => a+b},

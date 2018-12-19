@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ManualAnalysis\**" />
+    <EmbeddedResource Remove="ManualAnalysis\**" />
+    <None Remove="ManualAnalysis\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Day20.cs" />
     <Compile Remove="Day21.cs" />
     <Compile Remove="Day22.cs" />
