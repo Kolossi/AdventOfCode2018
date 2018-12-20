@@ -110,7 +110,15 @@ namespace Runner
             { '^',Direction.North},
             { '>',Direction.East},
             { 'v',Direction.South},
-            { '<',Direction.West }
+            { '<',Direction.West },
+            { 'N',Direction.North},
+            { 'E',Direction.East},
+            { 'S',Direction.South},
+            { 'W',Direction.West },
+            { 'n',Direction.North},
+            { 'e',Direction.East},
+            { 's',Direction.South},
+            { 'w',Direction.West }
         };
     }
 
