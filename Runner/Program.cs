@@ -28,9 +28,9 @@ namespace Runner
                 //new Day17(),
                 //new Day18(),
                 //new Day19(),
-                new Day20(),
+                //new Day20(),
                 //new Day21(),
-                //new Day22(),
+                new Day22(),
                 //new Day23(),
                 //new Day24(),
                 //new Day25()

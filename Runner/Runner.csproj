@@ -6,22 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ManualAnalysis\**" />
-    <EmbeddedResource Remove="ManualAnalysis\**" />
-    <None Remove="ManualAnalysis\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Day22.cs" />
     <Compile Remove="Day23.cs" />
     <Compile Remove="Day24.cs" />
     <Compile Remove="Day25.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Inputs\Day22First.txt" />
-    <None Remove="Inputs\Day22FirstTests.txt" />
-    <None Remove="Inputs\Day22SecondTests.txt" />
     <None Remove="Inputs\Day23First.txt" />
     <None Remove="Inputs\Day23FirstTests.txt" />
     <None Remove="Inputs\Day23SecondTests.txt" />
@@ -225,6 +215,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Inputs\Day21SecondTests.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Inputs\Day22First.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Inputs\Day22FirstTests.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Inputs\Day22SecondTests.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
