@@ -9,9 +9,10 @@ namespace Runner
     {
         public override string First(string input)
         {
-            LogEnabled = true;
+            LogEnabled = false;
             input = input.GetLines("^$")[0].Trim();
-            Map<int> map = GetMap(input);
+            //Map<int> map = GetMap(input);
+            Map<int> map = GetMapMultiWalk(input);
             Map<int> walkMap = GetWalkDistanceMap(map);
             LogLine(ShowState(map));
             LogLine(ShowValues(walkMap));
@@ -25,6 +26,7 @@ namespace Runner
 
         //public override string FirstTest(string input)
         //{
+        //    LogEnabled = false;
         //    //return First("^(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)$");
         //    return First("^(N|S|E|W)(N|S|E|W)(N|S|E|W)$");
 
@@ -36,6 +38,8 @@ namespace Runner
         }
 
         ////////////////////////////////////////////////////////
+
+        #region original
 
         private Map<int> GetMap(string input)
         {
@@ -84,52 +88,115 @@ namespace Runner
             return map;
         }
 
-        private Map<int> GetMapRecursive(string input)
+        #endregion
+
+        private Map<int> GetMapMultiWalk(string input)
         {
             Map<int> map = new Map<int>();
             map.Set(0, 0, 0);
-            Stack<Walk> branches = new Stack<Walk>();
-            var walk = new Walk()
+            Stack<MultiWalks> branches = new Stack<MultiWalks>();
+            var multiWalks = new MultiWalks();
+            multiWalks.StartWalks.AddLast(new Walk()
             {
                 Distance = 0,
                 XY = new XY(0, 0)
-            };
+            });
 
             for (int i = 0; i < input.Length; i++)
             {
                 var regexChar = input[i];
+                if (LogEnabled)
+                {
+                    LogLine("Char:'{0}',  multiWalks: {1}", regexChar, multiWalks);
+                    LogLine("Branches:{0}{1}", Environment.NewLine, string.Join(Environment.NewLine, branches.AsEnumerable()));
+                }
                 switch (regexChar)
                 {
                     case 'N':
                     case 'E':
                     case 'S':
                     case 'W':
-                        walk.XY = walk.XY.Move(XY.CharToDir[regexChar]);
-                        map.Set(walk.XY, (int)Items.Door);
-                        walk.XY = walk.XY.Move(XY.CharToDir[regexChar]);
-                        walk.Distance++;
-                        int currentDistance;
-                        if (!map.TryGetValue(walk.XY, out currentDistance) || currentDistance > walk.Distance)
+                        foreach (var startWalk in multiWalks.StartWalks)
                         {
-                            map.Set(walk.XY, walk.Distance);
+                            var walk = new Walk(startWalk);
+                            walk.XY = walk.XY.Move(XY.CharToDir[regexChar]);
+                            map.Set(walk.XY, (int)Items.Door);
+                            walk.XY = walk.XY.Move(XY.CharToDir[regexChar]);
+                            walk.Distance++;
+                            multiWalks.CompletedWalks.AddLast(walk);
+                            int currentDistance;
+                            if (!map.TryGetValue(walk.XY, out currentDistance) || currentDistance > walk.Distance)
+                            {
+                                map.Set(walk.XY, walk.Distance);
+                            }
                         }
                         break;
                     case '(':
-                        branches.Push(new Walk(walk));
+                        //multiWalks = new MultiWalks(multiWalks);
+                        //branches.Push(new MultiWalks(multiWalks));
                         break;
                     case ')':
-                        walk = branches.Pop();
+                        multiWalks.StartWalks = multiWalks.CompletedWalks;
+                        multiWalks.CompletedWalks = new LinkedList<Walk>();
+                        //multiWalks = branches.Pop();
                         break;
                     case '|':
-                        walk = new Walk(branches.Peek());
+                        //multiWalks = new MultiWalks(branches.Peek());
                         break;
                     default:
                         break;
                 }
-                LogLine(ShowState(map));
+                //LogLine(ShowState(map));
             }
             return map;
         }
+
+        //private Map<int> GetMapRecursive(string input)
+        //{
+        //    Map<int> map = new Map<int>();
+        //    map.Set(0, 0, 0);
+        //    Stack<Walk> branches = new Stack<Walk>();
+        //    var walk = new Walk()
+        //    {
+        //        Distance = 0,
+        //        XY = new XY(0, 0)
+        //    };
+
+        //    for (int i = 0; i < input.Length; i++)
+        //    {
+        //        var regexChar = input[i];
+        //        switch (regexChar)
+        //        {
+        //            case 'N':
+        //            case 'E':
+        //            case 'S':
+        //            case 'W':
+        //                walk.XY = walk.XY.Move(XY.CharToDir[regexChar]);
+        //                map.Set(walk.XY, (int)Items.Door);
+        //                walk.XY = walk.XY.Move(XY.CharToDir[regexChar]);
+        //                walk.Distance++;
+        //                int currentDistance;
+        //                if (!map.TryGetValue(walk.XY, out currentDistance) || currentDistance > walk.Distance)
+        //                {
+        //                    map.Set(walk.XY, walk.Distance);
+        //                }
+        //                break;
+        //            case '(':
+        //                branches.Push(new Walk(walk));
+        //                break;
+        //            case ')':
+        //                walk = branches.Pop();
+        //                break;
+        //            case '|':
+        //                walk = new Walk(branches.Peek());
+        //                break;
+        //            default:
+        //                break;
+        //        }
+        //        LogLine(ShowState(map));
+        //    }
+        //    return map;
+        //}
 
         public Map<int> GetWalkDistanceMap(Map<int> originalMap)
         {
@@ -222,6 +289,29 @@ namespace Runner
             NotVisited = int.MaxValue-2
         }
 
+        public class MultiWalks
+        {
+            public LinkedList<Walk> StartWalks = new LinkedList<Walk>();
+            public LinkedList<Walk> CompletedWalks = new LinkedList<Walk>();
+            public MultiWalks()
+            {
+
+            }
+
+            public MultiWalks(MultiWalks source)
+            {
+                StartWalks = new LinkedList<Walk>(source.StartWalks.Select(w => new Walk(w)));
+                CompletedWalks = new LinkedList<Walk>(source.CompletedWalks.Select(w => new Walk(w)));
+            }
+
+            public override string ToString()
+            {
+                return string.Format("S:{0} ; C:{1}",
+                    string.Join(", ", StartWalks),
+                    string.Join(", ", CompletedWalks));
+            }
+        }
+
         public class Walk
         {
             public int Distance;
@@ -235,6 +325,11 @@ namespace Runner
             {
                 Distance = source.Distance;
                 XY = source.XY;
+            }
+
+            public override string ToString()
+            {
+                return string.Format("({0}):{1}", Distance, XY);
             }
         }
     }
