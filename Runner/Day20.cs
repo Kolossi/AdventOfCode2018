@@ -13,6 +13,7 @@ namespace Runner
             input = input.GetLines("^$")[0].Trim();
             Map<int> map = GetMap(input);
             Map<int> walkMap = GetWalkDistanceMap(map);
+            LogLine(ShowState(map));
             LogLine(ShowValues(walkMap));
             return GetDistanceValues(walkMap).Max().ToString(); // not 3634 too high, 813 too low
         }
@@ -24,7 +25,9 @@ namespace Runner
 
         //public override string FirstTest(string input)
         //{
-        //    throw new NotImplementedException("SecondTest");
+        //    //return First("^(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)$");
+        //    return First("^(N|S|E|W)(N|S|E|W)(N|S|E|W)$");
+
         //}
 
         public override string SecondTest(string input)
@@ -71,11 +74,59 @@ namespace Runner
                         walk = branches.Pop();
                         break;
                     case '|':
-                        walk = branches.Peek();
+                        walk = new Walk(branches.Peek());
                         break;
                     default:
                         break;
                 }
+                //LogLine(ShowState(map));
+            }
+            return map;
+        }
+
+        private Map<int> GetMapRecursive(string input)
+        {
+            Map<int> map = new Map<int>();
+            map.Set(0, 0, 0);
+            Stack<Walk> branches = new Stack<Walk>();
+            var walk = new Walk()
+            {
+                Distance = 0,
+                XY = new XY(0, 0)
+            };
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                var regexChar = input[i];
+                switch (regexChar)
+                {
+                    case 'N':
+                    case 'E':
+                    case 'S':
+                    case 'W':
+                        walk.XY = walk.XY.Move(XY.CharToDir[regexChar]);
+                        map.Set(walk.XY, (int)Items.Door);
+                        walk.XY = walk.XY.Move(XY.CharToDir[regexChar]);
+                        walk.Distance++;
+                        int currentDistance;
+                        if (!map.TryGetValue(walk.XY, out currentDistance) || currentDistance > walk.Distance)
+                        {
+                            map.Set(walk.XY, walk.Distance);
+                        }
+                        break;
+                    case '(':
+                        branches.Push(new Walk(walk));
+                        break;
+                    case ')':
+                        walk = branches.Pop();
+                        break;
+                    case '|':
+                        walk = new Walk(branches.Peek());
+                        break;
+                    default:
+                        break;
+                }
+                LogLine(ShowState(map));
             }
             return map;
         }

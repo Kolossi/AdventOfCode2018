@@ -1,0 +1,78 @@
+0: r4 = 123
+1: r4 = r4 & 456
+2: if (r4 == 72) r4 = 1 else r4 = 0
+3: PTR = r4 + PTR
+4: PTR = 0
+5: r4 = 0                                          
+6: r3 = r4 | 65536                                  r3=r4 | 65536                 
+7: r4 = 3730679                                     r4 = 3730679
+8: r5 = r3 & 255                                     r5 =r3 & 255
+9: r4 = r4 + r5                                     r4 = ((3730679 + r4) * 65899) & 16777215
+10: r4 = r4 & 16777215                              
+11: r4 = r4 * 65899                                 
+12: r4 = r4 & 16777215                              
+13: if (r3 < 256) r5 = 1 else r5 = 0                
+14: PTR = r5 + PTR
+15: PTR = PTR + 1
+16: PTR = 27
+17: r5 = 0                                          r5 = 0
+18: r2 = r5 + 1                                     r2 =1
+19: r2 = r2 * 256                                   r2 = 256
+20: if (r2 > r3) r2 = 1 else r2 = 0                 if 256>65536
+21: PTR = r2 + PTR
+22: PTR = PTR + 1
+23: PTR = 25
+24: r5 = r5 + 1                                     r5++
+25: PTR = 17
+26: r3 = r5
+27: PTR = 7
+28: if (r4 == r0) r5 = 1 else r5 = 0                if r4==r0 exit else jump 6
+29: PTR = r5 + PTR                                  
+30: PTR = 5
+
+
+r4 =0
+do {
+  r3 = r4 | 65536
+  r4 = 3730679
+  do {
+      r5 = r3 & 255
+      r4 = (((r4 + r5) & 16777215) * 65899) & 16777215
+      if (r3 < 256) break; ## & EXIT if r4=r2
+      r5 = 0
+      do {
+          r2 = (r5+1)*256
+          r5++;
+      } while (r2<=r3)
+      r3=r5
+  } while (true)
+} while (r4!=r0)
+
+5: r4 = 0                                          
+6: r3 = r4 | 65536                           DDDD x r3=r4 | 65536                 
+7: r4 = 3730679                                   x r4 = 3730679
+8: r5 = r3 & 255                             BBBB x r5 =r3 & 255
+9: r4 = r4 + r5                                   x r4 = ((r4 + r5) * 65899) & 16777215
+10: r4 = r4 & 16777215                              .
+11: r4 = r4 * 65899                                 .
+12: r4 = r4 & 16777215                              .
+13: if (r3 < 256) r5 = 1 else r5 = 0              x if (r3 <256) EXITCHECK else r5 = 0
+14: PTR = r5 + PTR                                  .
+15: PTR = PTR + 1                                   .
+16: PTR = 27                                        .
+17: r5 = 0                                          .
+18: r2 = r5 + 1                           CCCC   x  r2 = r5+1
+19: r2 = r2 * 256                                x  r2 *= 256
+20: if (r2 > r3) r2 = 1 else r2 = 0                 if (r2>r3) r3 = r5 jump BBBB else r5++ jump CCCC
+21: PTR = r2 + PTR                                  .
+22: PTR = PTR + 1                                   .
+23: PTR = 25                                        .
+24: r5 = r5 + 1                                     .
+25: PTR = 17                                        .
+26: r3 = r5                               AAAA      .
+27: PTR = 7                                         .
+28: if (r4 == r0) r5 = 1 else r5 = 0      EXITCHECK if r4==r0 exit else jump DDDD
+29: PTR = r5 + PTR                                  
+30: PTR = 5
+
+

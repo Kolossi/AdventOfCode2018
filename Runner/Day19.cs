@@ -57,7 +57,7 @@ namespace Runner
             return progArray;
             
         }
-        private IEnumerable<Instruction> GetProgram(string input, out int ipreg)
+        public static IEnumerable<Instruction> GetProgram(string input, out int ipreg)
         {
             var lines = input.GetLines().AsEnumerable();
 
