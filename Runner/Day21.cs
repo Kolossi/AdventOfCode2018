@@ -93,7 +93,6 @@ namespace Runner
         private LinkedList<long> SimulatedFindTargets(long[] regs, IEnumerable<Instruction> instructions, int ipreg, bool firstOnly = false)
         {
             var target = regs[0];
-            var ptr = 8;
             var innerLoop = regs[2];
             var innerTarget = regs[3];
             var value = regs[4];
