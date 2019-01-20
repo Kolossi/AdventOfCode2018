@@ -117,11 +117,8 @@ namespace Runner
             for (int i = 0; i < input.Length; i++)
             {
                 var regexChar = input[i];
-                if (LogEnabled)
-                {
-                    LogLine("Char:'{0}',  branchRoutes: {1}, currentRoutes: {2}, routeStack: {3}", regexChar,branchRoutes,currentRoutes, routeStack);
-                    //LogLine("Branches:{0}{1}", Environment.NewLine, string.Join(Environment.NewLine, branches.AsEnumerable()));
-                }
+                LogLine("Before Char:'{0}',  branchRoutes: {1}, currentRoutes: {2}, routeStack: {3}", regexChar,branchRoutes,currentRoutes, routeStack);
+                //LogLine("Branches:{0}{1}", Environment.NewLine, string.Join(Environment.NewLine, branches.AsEnumerable()));
                 switch (regexChar)
                 {
                     case 'N':
@@ -149,11 +146,13 @@ namespace Runner
 
                     case '(':
                         branchRoutes = new LinkedList<Walk>(currentRoutes.Select(r => new Walk(r)));
+                        LogLine(ShowValues(map));
                         break;
                     case ')':
                         currentRoutes.AddLast(routeStack.First.Value);
                         routeStack.RemoveFirst();
                         branchRoutes = new LinkedList<Walk>(currentRoutes.Select(r => new Walk(r)));
+                        LogLine(ShowValues(map));
                         break;
                     case '|':
                         foreach (var r in currentRoutes)
@@ -161,11 +160,13 @@ namespace Runner
                             routeStack.AddFirst(r);
                         }
                         currentRoutes = new LinkedList<Walk>(branchRoutes.Select(r => new Walk(r)));
+                        LogLine(ShowValues(map));
                         break;
                     default:
                         break;
                 }
                 //LogLine(ShowState(map));
+                LogLine(" After Char:'{0}',  branchRoutes: {1}, currentRoutes: {2}, routeStack: {3}", regexChar, branchRoutes, currentRoutes, routeStack);
             }
             return map;
         }
