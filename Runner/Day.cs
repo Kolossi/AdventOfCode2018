@@ -183,9 +183,9 @@ namespace Runner
                 var strValues = new List<string>();
                 foreach (var o in (a as System.Collections.IEnumerable))
                 {
-                    strValues.Add(o.ToString());
+                    strValues.Add(ConvertEnumerableArgToCSVString(o).ToString());
                 }
-                newArg = string.Join(", ", strValues);
+                newArg = string.Format("[{0}]",string.Join(", ", strValues));
             }
             else
             {
