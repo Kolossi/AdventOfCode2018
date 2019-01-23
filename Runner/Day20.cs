@@ -9,17 +9,19 @@ namespace Runner
     {
         public override string First(string input)
         {
-            //LogEnabled = false;
+            //^(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)$:93
+
+            LogEnabled = false;
             //LogEnabled = true;
-            LogEnabled = (input == "^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$");
+            //LogEnabled = (input == "^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$");
             input = input.GetLines("^$")[0].Trim();
             //Map<int> map = GetMap(input);
             //Map<int> map = GetMapMultiWalk(input);
             Map<int> map = GetMapRecursive(input);
             Map<int> walkMap = GetWalkDistanceMap(map);
-            LogEnabled = true;
-            LogLine(ShowState(map));
-            LogLine(ShowValues(walkMap));
+            //LogEnabled = true;
+            //LogLine(ShowState(map));
+            //LogLine(ShowValues(walkMap));
             int result = GetDistanceValues(walkMap).Max();
             LogLine("{0} ===> {1}", input, result);
             return result.ToString(); // not 3634 too high, 813 too low
@@ -99,11 +101,74 @@ namespace Runner
         private Map<int> GetMapRecursive(string input)
         {
             int pos = 0;
-            var allWalkStrings = new List<string>();
-            var walksInProgressAtStart = new List<string>() { "" };
-            allWalkStrings = WalkMapRecursive(allWalkStrings, walksInProgressAtStart.AsEnumerable(), input, ref pos);
+            //var allWalkStrings = new List<string>();
+            //var walksInProgressAtStart = new List<string>() { "" };
+            var allWalkStrings = WalkMapRecursive(input, ref pos);
             var map = GetMapFromAllWalks(allWalkStrings);
             return map;
+        }
+
+        private List<string> WalkMapRecursive(string input, ref int pos, int depth = -1)
+        {
+            depth++;
+
+            var currentWalks = new List<string>() { string.Empty };
+            var wholeTermWalks = new List<string>();
+            var walk = string.Empty;
+
+            var exit = false;
+            while (pos < input.Length && !exit)
+            {
+                var regexChar = input[pos++];
+                if (LogEnabled) ShowAllRoutes(string.Format("Before {0}", regexChar), wholeTermWalks, currentWalks, walk, input, pos - 1, depth);
+                switch (regexChar)
+                {
+                    case '(':
+                    case '|':
+                        currentWalks = currentWalks.Select(s => new string((s + walk).ToArray())).ToList();
+                        walk = string.Empty;
+                        break;
+                }
+
+                switch (regexChar)
+                {
+                    case ')':
+                    case '$':
+                        exit = true;
+                        break;
+                    case '(':
+                        var subTermWalks = WalkMapRecursive(input, ref pos, depth);
+                        subTermWalks = subTermWalks.SelectMany(stw => currentWalks.Select(cw => new string((cw + stw).ToArray()))).ToList();
+                        if (string.IsNullOrEmpty(subTermWalks.FirstOrDefault()))
+                        {
+                            wholeTermWalks = wholeTermWalks.Union(subTermWalks.Where(s=>!string.IsNullOrEmpty(s)))
+                                .Select(s => new string(s.ToArray())).ToList();
+                        }
+                        else
+                        {
+                            currentWalks = currentWalks.Union(subTermWalks)
+                                .Select(s => new string(s.ToArray())).ToList();
+                        }
+                        break;
+                    case '|':
+                        wholeTermWalks = wholeTermWalks.Union(currentWalks).Select(s=>new string(s.ToArray())).ToList();
+                        currentWalks = new List<string>() { string.Empty };
+                        break;
+                    case 'N':
+                    case 'E':
+                    case 'S':
+                    case 'W':
+                        walk = walk + regexChar;
+                        break;
+
+                }
+                if (LogEnabled) ShowAllRoutes(string.Format(" After {0}", regexChar), wholeTermWalks, currentWalks, walk, input, pos - 1, depth);
+            }
+            currentWalks = currentWalks.Select(s => new string((s + walk).ToArray())).ToList();
+            var allWalks = currentWalks.Union(wholeTermWalks).ToList();
+            allWalks = allWalks.Union(currentWalks).Select(s=>new string(s.ToArray())).ToList();
+            if (LogEnabled) ShowAllRoutes("Exit", wholeTermWalks, currentWalks, walk, input, pos - 1, depth);
+            return allWalks;
         }
 
         private Map<int> GetMapFromAllWalks(List<string> allWalkStrings)
@@ -133,60 +198,60 @@ namespace Runner
             return map;
         }
 
-        private List<string> WalkMapRecursive(List<string> allWalks, IEnumerable<string> walksInProgressAtStart, string input, ref int pos, int depth = -1)
-        {
-            depth++;
-            var currentWalks = new List<string>(walksInProgressAtStart.Select(w => new string(w.ToArray())));
-            var newWalks = new List<string>();
-            if (LogEnabled) ShowAllRoutes("Entry", allWalks, newWalks, currentWalks, input, pos, depth);
-            var exit = false;
-            while (pos < input.Length && !exit)
-            {
-                var regexChar = input[pos++];
-                if (LogEnabled) ShowAllRoutes(string.Format("Before {0}", regexChar), allWalks, newWalks, currentWalks, input, pos - 1, depth);
-                switch (regexChar)
-                {
-                    case ')':
-                    case '$':
-                        //newWalks = newWalks.Union(currentWalks).ToList();
-                        exit = true;
-                        break;
-                    case '(':
-                        //if (LogEnabled) ShowAllRoutes("OpenBracket", allWalks, newWalks, currentWalks, input, pos-1, depth);
-                        currentWalks = WalkMapRecursive(allWalks, currentWalks, input, ref pos, depth);
-                        break;
-                    case '|':
-                        //newWalks = newWalks.Union(currentWalks).ToList();
-                        //currentWalks = new List<string>(walksInProgressAtStart.Select(w => new string(w.ToArray())));
-                        //if (LogEnabled) ShowAllRoutes("pipe", allWalks, newWalks, currentWalks, input, pos-1, depth);
-                        var walksAfterPipe = WalkMapRecursive(allWalks, walksInProgressAtStart, input, ref pos, depth);
-                        currentWalks = currentWalks.Union(walksAfterPipe).ToList();
-                        break;
-                    case 'N':
-                    case 'E':
-                    case 'S':
-                    case 'W':
-                        currentWalks = currentWalks.Select(w => w + regexChar).ToList();
-                        break;
+        //private List<string> WalkMapRecursive(List<string> allWalks, IEnumerable<string> walksInProgressAtStart, string input, ref int pos, int depth = -1)
+        //{
+        //    depth++;
+        //    var currentWalks = new List<string>(walksInProgressAtStart.Select(w => new string(w.ToArray())));
+        //    var newWalks = new List<string>();
+        //    if (LogEnabled) ShowAllRoutes("Entry", allWalks, newWalks, currentWalks, input, pos, depth);
+        //    var exit = false;
+        //    while (pos < input.Length && !exit)
+        //    {
+        //        var regexChar = input[pos++];
+        //        if (LogEnabled) ShowAllRoutes(string.Format("Before {0}", regexChar), allWalks, newWalks, currentWalks, input, pos - 1, depth);
+        //        switch (regexChar)
+        //        {
+        //            case ')':
+        //            case '$':
+        //                //newWalks = newWalks.Union(currentWalks).ToList();
+        //                exit = true;
+        //                break;
+        //            case '(':
+        //                //if (LogEnabled) ShowAllRoutes("OpenBracket", allWalks, newWalks, currentWalks, input, pos-1, depth);
+        //                currentWalks = WalkMapRecursive(allWalks, currentWalks, input, ref pos, depth);
+        //                break;
+        //            case '|':
+        //                //newWalks = newWalks.Union(currentWalks).ToList();
+        //                //currentWalks = new List<string>(walksInProgressAtStart.Select(w => new string(w.ToArray())));
+        //                //if (LogEnabled) ShowAllRoutes("pipe", allWalks, newWalks, currentWalks, input, pos-1, depth);
+        //                var walksAfterPipe = WalkMapRecursive(allWalks, walksInProgressAtStart, input, ref pos, depth);
+        //                currentWalks = currentWalks.Union(walksAfterPipe).ToList();
+        //                break;
+        //            case 'N':
+        //            case 'E':
+        //            case 'S':
+        //            case 'W':
+        //                currentWalks = currentWalks.Select(w => w + regexChar).ToList();
+        //                break;
 
-                }
-                if (LogEnabled) ShowAllRoutes(string.Format(" After {0}", regexChar), allWalks, newWalks, currentWalks, input, pos - 1, depth);
-            }
-            newWalks = newWalks.Union(currentWalks).ToList();
-            allWalks = allWalks.Union(currentWalks).ToList();
-            if (LogEnabled) ShowAllRoutes("Exit", allWalks, newWalks, currentWalks, input, pos-1, depth);
-            return newWalks;
-        }
+        //        }
+        //        if (LogEnabled) ShowAllRoutes(string.Format(" After {0}", regexChar), allWalks, newWalks, currentWalks, input, pos - 1, depth);
+        //    }
+        //    newWalks = newWalks.Union(currentWalks).ToList();
+        //    allWalks = allWalks.Union(currentWalks).ToList();
+        //    if (LogEnabled) ShowAllRoutes("Exit", allWalks, newWalks, currentWalks, input, pos-1, depth);
+        //    return newWalks;
+        //}
 
-        private static void ShowAllRoutes(string message, List<string> allWalks, List<string> newWalks, List<string> currentWalks, string input, int pos, int depth)
+        private static void ShowAllRoutes(string message, List<string> wholeTermWalks, List<string> currentWalks, string walk, string input, int pos, int depth)
         {
             var indent = new string(' ', depth * 4);
             LogLine("{0}{1}", indent, message);
             LogLine("{0}{1}","",input);
             LogLine("{0}{1}^", "",new string(' ', pos));
-            LogLine("{0}allWalks={1}", indent,allWalks);
-            LogLine("{0}newWalks={1}", indent, newWalks);
+            LogLine("{0}newWalks={1}", indent, wholeTermWalks);
             LogLine("{0}currentWalks={1}", indent, currentWalks);
+            LogLine("{0}walk={1}", indent, walk);
         }
 
         //private Map<int> GetMapRecursive(string input)
